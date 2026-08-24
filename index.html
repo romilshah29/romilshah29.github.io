@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Romil Shah — Research</title>
+<meta name="description" content="Romil Shah — research scientist working on post-training, reinforcement learning, and continual learning for frontier language models.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --panel: #fbfaf7;
+    --ink: #1a1a17;
+    --ink-soft: #4a4843;
+    --ink-faint: #8b887f;
+    --rule: #d8d3c8;
+    --accent: #2f5d50;
+    --accent-soft: #6b8f84;
+    --accent-wash: #e9efec;
+    --maxw: 820px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  a { color: var(--accent); }
+
+  header.top { padding: 26px 0 0; }
+  .top-inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 0 28px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 14px;
+  }
+  .top-inner .mark { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
+  .top-nav { display: flex; gap: 10px; }
+  .top-nav a {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.03em;
+    color: var(--ink-soft); text-decoration: none; border: 1px solid var(--rule);
+    border-radius: 3px; padding: 6px 11px; transition: border-color .2s, color .2s;
+  }
+  .top-nav a:hover { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 560px) { .top-nav a.hide-sm { display: none; } }
+
+  .hero { padding: 62px 0 20px; display: grid; grid-template-columns: 1fr; gap: 38px; }
+  @media (min-width: 720px) { .hero { grid-template-columns: 1.15fr 1fr; align-items: center; gap: 48px; } }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 22px;
+  }
+  h1.name {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: clamp(40px, 7vw, 60px);
+    line-height: 1.0; letter-spacing: -0.015em; margin: 0 0 22px;
+  }
+  .lede { font-size: clamp(18px, 2.2vw, 21px); line-height: 1.45; max-width: 34ch; margin: 0 0 26px; }
+  .lede .hl { color: var(--accent); font-weight: 500; }
+  .role { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
+  .role strong { color: var(--ink); font-weight: 500; }
+
+  .figure { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 24px 20px 16px; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure-cap {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+    color: var(--ink-faint); text-align: center; margin: 12px 0 0;
+  }
+  .ribbon { display: flex; flex-wrap: wrap; gap: 10px; padding: 6px 0 0; }
+  .ribbon a {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink);
+    text-decoration: none; border: 1px solid var(--rule); border-radius: 3px; padding: 9px 15px;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .ribbon a:hover { border-color: var(--accent); color: var(--accent); background: var(--panel); }
+  .ribbon a.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .ribbon a.primary:hover { background: #264a40; color: #fff; }
+  .ribbon svg { flex: none; }
+
+  .section-head {
+    display: flex; align-items: baseline; gap: 15px; border-top: 1px solid var(--rule);
+    padding-top: 20px; margin-top: 54px; margin-bottom: 26px;
+  }
+  .section-head .idx { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.05em; }
+  .section-head h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 24px; letter-spacing: -0.01em; margin: 0; }
+
+  /* featured continual-learning block */
+  .feature-lead { font-size: 18px; line-height: 1.5; color: var(--ink); margin: 0 0 26px; max-width: 64ch; }
+  .strands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  @media (max-width: 620px) { .strands { grid-template-columns: 1fr; } }
+  .strand { background: var(--panel); padding: 22px 20px 24px; display: flex; flex-direction: column; gap: 9px; position: relative; }
+  .strand:not(:last-child) { border-right: 1px solid var(--rule); }
+  @media (max-width: 620px) { .strand:not(:last-child) { border-right: none; border-bottom: 1px solid var(--rule); } }
+  .strand-node { width: 46px; height: 46px; border-radius: 6px; background: var(--accent-wash); display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+  .strand-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-soft); margin: 0; }
+  .strand h3 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; margin: 0; color: var(--ink); letter-spacing: -0.01em; }
+  .strand p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+
+  /* supporting areas */
+  .areas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 620px) { .areas { grid-template-columns: 1fr; } }
+  .area { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 17px 19px 18px; display: flex; flex-direction: column; gap: 7px; }
+  .area h3 { font-size: 15px; font-weight: 600; margin: 0; color: var(--ink); }
+  .area .tag { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-soft); margin: 0; }
+  .area p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+
+  .entries { margin-top: 2px; }
+  .entry { display: block; text-decoration: none; color: inherit; padding: 18px 0; border-bottom: 1px solid var(--rule); transition: padding-left .25s ease; }
+  .entry:first-child { border-top: 1px solid var(--rule); }
+  a.entry:hover { padding-left: 9px; }
+  a.entry:hover .entry-title { color: var(--accent); }
+  .entry-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .entry-title { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; margin: 0; transition: color .2s ease; }
+  .entry .arrow { color: var(--accent); }
+  .scholar-line { font-size: 14px; color: var(--ink-soft); margin-top: 18px; }
+  .scholar-line a { text-decoration: none; border-bottom: 1px solid var(--rule); }
+
+  footer { margin-top: 56px; padding: 26px 0 46px; border-top: 1px solid var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(12px);} to {opacity:1; transform:none;} }
+  .rise { opacity: 0; animation: rise .65s cubic-bezier(.2,.7,.2,1) forwards; }
+  .d1{animation-delay:.04s}.d2{animation-delay:.14s}.d3{animation-delay:.24s}.d4{animation-delay:.34s}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="#" class="mark">Romil Shah</a>
+    <nav class="top-nav">
+      <a href="#work">Work</a>
+      <a href="#publications" class="hide-sm">Publications</a>
+      <a href="mailto:romilshah29@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow rise d1">Post-training · RL · Continual learning</p>
+      <h1 class="name rise d1">Romil Shah</h1>
+      <p class="lede rise d2">I work on the <span class="hl">learning loop</span> of frontier language models: turning real-world interaction into model improvement.</p>
+      <p class="role rise d3"><strong>Lead Researcher</strong><br>Meta Superintelligence Labs</p>
+    </div>
+
+    <figure class="figure rise d3" aria-label="Continual learning across three timescales: agentic memory, data flywheel, and parametric continual learning.">
+      <svg viewBox="0 0 320 232" xmlns="http://www.w3.org/2000/svg" role="img">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L9 5 L0 10 z" fill="var(--accent-soft)"/>
+          </marker>
+        </defs>
+        <rect x="18" y="16" width="284" height="52" rx="5" fill="var(--accent-wash)" stroke="var(--rule)" stroke-width="1"/>
+        <text x="30" y="34" font-family="'JetBrains Mono', monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">POD · AGENTIC MEMORY</text>
+        <text x="30" y="52" font-family="'Fraunces', serif" font-size="14" fill="var(--ink)">fast · per-interaction</text>
+        <text x="288" y="47" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="var(--ink-faint)">ms–min</text>
+        <rect x="18" y="90" width="284" height="52" rx="5" fill="var(--accent-wash)" stroke="var(--rule)" stroke-width="1"/>
+        <text x="30" y="108" font-family="'JetBrains Mono', monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">POD · DATA FLYWHEEL</text>
+        <text x="30" y="126" font-family="'Fraunces', serif" font-size="14" fill="var(--ink)">consolidation loop</text>
+        <text x="288" y="121" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="var(--ink-faint)">days</text>
+        <rect x="18" y="164" width="284" height="52" rx="5" fill="#fff" stroke="var(--rule)" stroke-width="1"/>
+        <text x="30" y="182" font-family="'JetBrains Mono', monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">RESEARCH · PARAMETRIC CL</text>
+        <text x="30" y="200" font-family="'Fraunces', serif" font-size="14" fill="var(--ink)">slow · in the weights</text>
+        <text x="288" y="195" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="var(--ink-faint)">gens</text>
+        <line x1="160" y1="68" x2="160" y2="88" stroke="var(--accent-soft)" stroke-width="1.5" marker-end="url(#ar)"/>
+        <line x1="160" y1="142" x2="160" y2="162" stroke="var(--accent-soft)" stroke-width="1.5" marker-end="url(#ar)"/>
+      </svg>
+      <figcaption class="figure-cap">continual learning across timescales</figcaption>
+    </figure>
+  </section>
+
+  <div class="ribbon rise d4">
+    <a class="primary" href="Romil_Shah_MSL.pdf" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h2"/></svg>
+      Résumé
+    </a>
+    <a href="https://www.linkedin.com/in/romilshah29/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://scholar.google.com/citations?user=xNTfrC0AAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+    <a href="https://www.semanticscholar.org/author/Romil-Shah/2214540492" target="_blank" rel="noopener">Semantic Scholar</a>
+    <a href="https://github.com/romilshah29" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:romilshah29@gmail.com">Email</a>
+  </div>
+
+  <section id="work">
+    <div class="section-head"><span class="idx">01</span><h2>Continual learning</h2></div>
+
+    <div class="feature">
+      <p class="feature-lead">I lead Meta's continual-learning effort across two production pods and a research strand, spanning the timescales on which a model can keep learning after deployment.</p>
+      <div class="strands">
+        <div class="strand">
+          <div class="strand-node" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <rect x="4" y="4" width="26" height="26" rx="4" stroke="var(--accent)" stroke-width="1.6"/>
+              <path d="M10 13 H24 M10 17 H24 M10 21 H19" stroke="var(--accent-soft)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <p class="strand-tag">Pod · lead</p>
+          <h3>Agentic memory</h3>
+          <p>Persistent identity and process memory. Retrieval, context compression, and trigger-gated recall for long-horizon agents.</p>
+        </div>
+        <div class="strand">
+          <div class="strand-node" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <path d="M17 5 a12 12 0 1 1 -9 4" stroke="var(--accent)" stroke-width="1.6" fill="none"/>
+              <path d="M8 8 l-3 2.5 M8 8 l1 3.6" stroke="var(--accent)" stroke-width="1.6"/>
+              <circle cx="17" cy="17" r="2.5" fill="var(--accent-soft)"/>
+            </svg>
+          </div>
+          <p class="strand-tag">Pod · lead</p>
+          <h3>Data flywheel</h3>
+          <p>Production signal to preference data to continual updates. The consolidation loop that compounds quality every generation.</p>
+        </div>
+        <div class="strand">
+          <div class="strand-node" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="12" stroke="var(--accent)" stroke-width="1.6" fill="none"/>
+              <circle cx="12" cy="14" r="2" fill="var(--accent-soft)"/><circle cx="22" cy="13" r="2" fill="var(--accent-soft)"/>
+              <circle cx="17" cy="22" r="2" fill="var(--accent-soft)"/><circle cx="21" cy="20" r="2" fill="var(--accent)"/>
+              <path d="M12 14 L22 13 M12 14 L17 22 M22 13 L21 20 M17 22 L21 20" stroke="var(--accent-soft)" stroke-width="1.1"/>
+            </svg>
+          </div>
+          <p class="strand-tag">Research</p>
+          <h3>Parametric CL</h3>
+          <p>Learning that lands in the weights: consolidation without catastrophic forgetting, and stability across model generations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:44px;"><span class="idx">02</span><h2>Also working on</h2></div>
+    <div class="areas">
+      <div class="area">
+        <p class="tag">Post-training</p>
+        <h3>Reward modeling &amp; RL</h3>
+        <p>RLHF, RLAIF, and RL from real user feedback. Reward models, preference-data pipelines, and RL environments for tool-use.</p>
+      </div>
+      <div class="area">
+        <p class="tag">Reasoning &amp; agents</p>
+        <h3>Agentic systems</h3>
+        <p>Reasoning models, tool use, and computer use. Rebuilt Meta AI's search stack around agentic workflows.</p>
+      </div>
+      <div class="area">
+        <p class="tag">Evaluation</p>
+        <h3>Grounding &amp; honesty</h3>
+        <p>Evaluation for factual grounding, tool-use accuracy, and calibration. Whether a model knows what it knows, on live traffic.</p>
+      </div>
+      <div class="area">
+        <p class="tag">Distillation</p>
+        <h3>Efficient serving</h3>
+        <p>Compressing frontier capability into latency- and memory-constrained targets while preserving behavior.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications">
+    <div class="section-head"><span class="idx">03</span><h2>Publications &amp; patents</h2></div>
+    <div class="entries">
+      <a class="entry" href="https://dl.acm.org/doi/10.1145/3543873.3584657" target="_blank" rel="noopener">
+        <div class="entry-meta"><span>ACM WebConf (WWW) 2023</span><span>Recommender systems</span></div>
+        <p class="entry-title">PIE: Personalized Interest Exploration for Large-Scale Recommender Systems <span class="arrow">&rarr;</span></p>
+      </a>
+      <a class="entry" href="https://patents.google.com/patent/US9830392B1" target="_blank" rel="noopener">
+        <div class="entry-meta"><span>US Patent 9,830,392</span><span>Issued 2017</span></div>
+        <p class="entry-title">Query-dependent and content-class based ranking <span class="arrow">&rarr;</span></p>
+      </a>
+      <a class="entry" href="https://patents.google.com/patent/US20180060936A1" target="_blank" rel="noopener">
+        <div class="entry-meta"><span>US Patent App. 2018/0060936</span><span>Filed 2018</span></div>
+        <p class="entry-title">Search ranking <span class="arrow">&rarr;</span></p>
+      </a>
+    </div>
+    <p class="scholar-line">
+      Full record on
+      <a href="https://scholar.google.com/citations?user=xNTfrC0AAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a> and
+      <a href="https://www.semanticscholar.org/author/Romil-Shah/2214540492" target="_blank" rel="noopener">Semantic Scholar</a>.
+    </p>
+  </section>
+
+  <footer>
+    <span>Romil Shah</span>
+    <span>Post-training · RL · Continual learning</span>
+  </footer>
+
+</main>
+
+<script>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animation = 'rise .6s cubic-bezier(.2,.7,.2,1) forwards';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('#work .section-head, .feature, .areas, #publications .section-head, .entries').forEach(el => {
+      el.style.opacity = '0';
+      io.observe(el);
+      setTimeout(() => { if (el.style.opacity === '0') el.style.opacity = '1'; }, 1200);
+    });
+  })();
+</script>
+</body>
+</html>
