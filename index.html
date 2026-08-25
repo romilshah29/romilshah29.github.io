@@ -308,5 +308,46 @@
     });
   })();
 </script>
+
+<!-- ============================================================
+     GoatCounter analytics (free, cookieless, no consent banner)
+     Dashboard: https://romilshah29.goatcounter.com
+     ============================================================ -->
+<script data-goatcounter="https://romilshah29.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
+<!-- Click tracking: résumé download + outbound links.
+     Fires a named event GoatCounter shows under Pages, e.g. "click-resume". -->
+<script>
+  (function () {
+    function gcEvent(path, title) {
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path: path, title: title, event: true });
+      }
+    }
+    // Résumé button
+    document.querySelectorAll('a[href$="Romil_Shah_MSL.pdf"]').forEach(function (a) {
+      a.addEventListener('click', function () { gcEvent('click-resume', 'Resume download'); });
+    });
+    // Outbound links (LinkedIn, Scholar, GitHub, patents, email, etc.)
+    document.querySelectorAll('a[href^="http"], a[href^="mailto:"]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var host = 'link';
+        try { host = a.hostname || (a.href.split(':')[0]); } catch (e) {}
+        // shorten common ones to readable labels
+        var label = host
+          .replace('www.', '')
+          .replace('linkedin.com', 'linkedin')
+          .replace('scholar.google.com', 'scholar')
+          .replace('semanticscholar.org', 'semanticscholar')
+          .replace('github.com', 'github')
+          .replace('patents.google.com', 'patent')
+          .replace('dl.acm.org', 'acm-paper');
+        if (a.href.indexOf('mailto:') === 0) label = 'email';
+        gcEvent('click-' + label, 'Outbound: ' + label);
+      });
+    });
+  })();
+</script>
 </body>
 </html>
