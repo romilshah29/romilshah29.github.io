@@ -1,0 +1,13 @@
+{
+  "name": "romilshah29.github.io",
+  "ports": [
+    { "name": "web", "port": 8000 }
+  ],
+  "start": "bash .cursor/serve.sh",
+  "terminals": [
+    {
+      "name": "web",
+      "command": "tail -F /tmp/cursor-web-server.log"
+    }
+  ]
+}
