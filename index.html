@@ -127,6 +127,7 @@
   a.entry:hover .entry-title { color: var(--accent-link); }
   .entry-meta { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
   .entry-title { font-size: 21px; font-weight: 600; line-height: 1.19; letter-spacing: .011em; margin: 0; transition: color .2s ease; }
+  .entry-desc { font-size: 17px; line-height: 1.47; color: var(--ink-soft); margin: 8px 0 0; }
   .entry .arrow { color: var(--accent-link); }
   .scholar-line { font-size: 14px; color: var(--ink-faint); margin-top: 24px; text-align: center; }
 
@@ -144,6 +145,7 @@
     <a href="#" class="mark">Romil Shah</a>
     <nav class="top-nav">
       <a href="#work">Work</a>
+      <a href="#writing">Writing</a>
       <a href="#publications" class="hide-sm">Publications</a>
       <a href="mailto:romilshah29@gmail.com">Contact</a>
     </nav>
@@ -268,6 +270,17 @@
     </div>
   </section>
 
+  <section id="writing">
+    <div class="section-head"><h2>Writing</h2></div>
+    <div class="entries">
+      <a class="entry" href="continual-learning.html">
+        <div class="entry-meta"><span>Note</span><span>Continual learning</span></div>
+        <p class="entry-title">The continual learning landscape <span class="arrow">&rarr;</span></p>
+        <p class="entry-desc">Current systems rely on agentic memory and data flywheels. Both leave the weights frozen between releases. Parametric memory is the next front.</p>
+      </a>
+    </div>
+  </section>
+
   <section id="publications">
     <div class="section-head"><span class="idx">03</span><h2>Publications &amp; patents</h2></div>
     <div class="entries">
@@ -310,7 +323,7 @@
         }
       });
     }, { threshold: 0.12 });
-    document.querySelectorAll('#work .section-head, .feature, .areas, #publications .section-head, .entries').forEach(el => {
+    document.querySelectorAll('#work .section-head, .feature, .areas, #writing .section-head, #publications .section-head, .entries').forEach(el => {
       el.style.opacity = '0';
       io.observe(el);
       setTimeout(() => { if (el.style.opacity === '0') el.style.opacity = '1'; }, 1200);
@@ -337,6 +350,10 @@
     // Résumé button
     document.querySelectorAll('a[href$="Romil_Shah_MSL.pdf"]').forEach(function (a) {
       a.addEventListener('click', function () { gcEvent('click-resume', 'Resume download'); });
+    });
+    // Essay link
+    document.querySelectorAll('a[href="continual-learning.html"]').forEach(function (a) {
+      a.addEventListener('click', function () { gcEvent('click-essay-cl', 'Essay: continual learning'); });
     });
     // Outbound links (LinkedIn, Scholar, GitHub, patents, email, etc.)
     document.querySelectorAll('a[href^="http"], a[href^="mailto:"]').forEach(function (a) {
