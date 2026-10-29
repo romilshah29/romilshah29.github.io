@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The continual learning landscape — Romil Shah</title>
+<meta name="description" content="Current continual-learning systems rely on agentic memory and data flywheels. Parametric memory is the next front. A map of the landscape and the open problems.">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<style>
+  :root {
+    --bg: #fbfbfd;
+    --bg-alt: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --ink-soft: #424245;
+    --ink-faint: #6e6e73;
+    --rule: rgba(0,0,0,.1);
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --accent-link: #0066cc;
+    --accent-wash: rgba(0,113,227,.08);
+    --nav-bg: rgba(251,251,253,.72);
+    --shadow: 0 2px 12px rgba(0,0,0,.06);
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+    --maxw: 980px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --bg-alt: #161617;
+      --card: #1d1d1f;
+      --ink: #f5f5f7;
+      --ink-soft: #d2d2d7;
+      --ink-faint: #86868b;
+      --rule: rgba(255,255,255,.14);
+      --accent: #2997ff;
+      --accent-hover: #4aa8ff;
+      --accent-link: #2997ff;
+      --accent-wash: rgba(41,151,255,.14);
+      --nav-bg: rgba(0,0,0,.72);
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font); font-size: 17px; line-height: 1.47059; letter-spacing: -0.022em;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent-link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* frosted global nav */
+  header.top {
+    position: sticky; top: 0; z-index: 10; height: 48px;
+    background: var(--nav-bg); border-bottom: 1px solid var(--rule);
+    -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+  }
+  .top-inner { max-width: var(--maxw); height: 100%; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+  .top-inner .mark { font-weight: 600; font-size: 17px; color: var(--ink); letter-spacing: -0.02em; }
+  .top-inner .mark:hover { text-decoration: none; }
+  .top-nav { display: flex; gap: 28px; }
+  .top-nav a { font-size: 12px; letter-spacing: -0.01em; color: var(--ink-soft); transition: color .2s; }
+  .top-nav a:hover { color: var(--ink); text-decoration: none; }
+  @media (max-width: 560px) { .top-nav a.hide-sm { display: none; } .top-nav { gap: 20px; } }
+
+
+  .wrap { max-width: 720px; }
+  .article { padding: 72px 0 0; }
+  .kicker { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+  h1 { font-weight: 700; font-size: clamp(36px, 6vw, 56px); line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 20px; }
+  .standfirst { font-size: clamp(19px, 2.2vw, 24px); line-height: 1.33; color: var(--ink-faint); margin: 0 0 14px; font-weight: 500; }
+  .byline { font-size: 14px; color: var(--ink-faint); margin: 0 0 8px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+  .article h2 { font-weight: 700; font-size: 32px; letter-spacing: -0.025em; line-height: 1.15; margin: 64px 0 12px; }
+  .article h3 { font-weight: 600; font-size: 21px; letter-spacing: -0.015em; margin: 32px 0 6px; }
+  .article p { margin: 0 0 18px; color: var(--ink-soft); }
+  .article p.lead { font-size: 21px; line-height: 1.4; color: var(--ink); }
+  .article strong { color: var(--ink); font-weight: 600; }
+  .article ul, .article ol { margin: 0 0 18px; padding-left: 22px; }
+  .article li { margin: 0 0 9px; color: var(--ink-soft); }
+  .pull { font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -0.02em; color: var(--ink) !important; border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: 32px 0 !important; }
+  .figure { background: var(--bg-alt); border-radius: 24px; padding: 28px 24px 18px; margin: 28px 0; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure-cap { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 14px 0 0; }
+  .note { font-size: 14px; color: var(--ink-faint); margin: 32px 0 0; }
+  footer { margin-top: 80px; padding: 20px 0 28px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="index.html" class="mark">Romil Shah</a>
+    <nav class="top-nav"><a href="index.html">&larr; Home</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <p class="kicker">Note · Continual learning</p>
+    <h1>The continual learning landscape</h1>
+    <p class="standfirst">Current systems rely on agentic memory and data flywheels. Both leave the model's weights frozen between releases. Parametric memory is the next front.</p>
+    <p class="byline">Romil Shah · October 2026</p>
+
+    <p class="lead">A deployed model is frozen at its weights. Everything we call continual learning today is built to work around that frozen core, not to move it. Production systems put all the adaptation in a non-parametric layer: agentic memory at serve time, and a data flywheel that retrains offline. Both are real and both work. Both leave the weights static between releases. The next front is parametric memory, where the model updates its own weights continuously, and the 2026 research has moved decisively in that direction.</p>
+
+    <h2>The three places adaptation can live</h2>
+    <p>Every continual-learning method puts the update in one of three substrates. This is the organizing axis across the recent agent-memory surveys.</p>
+
+    <div class="figure" aria-label="Three substrates for adaptation: context, non-parametric store, parametric weights.">
+      <svg viewBox="0 0 320 196" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="18" y="14" width="284" height="48" rx="5" fill="var(--accent-wash)" stroke="none"/>
+        <text x="30" y="33" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">CONTEXT</text>
+        <text x="30" y="50" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">prompt / KV cache · ephemeral</text>
+        <text x="289" y="43" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">no forgetting</text>
+
+        <rect x="18" y="74" width="284" height="48" rx="5" fill="var(--accent-wash)" stroke="none"/>
+        <text x="30" y="93" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">NON-PARAMETRIC STORE</text>
+        <text x="30" y="110" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">retrieval / agentic memory · inspectable</text>
+        <text x="289" y="103" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">store grows</text>
+
+        <rect x="18" y="134" width="284" height="48" rx="5" fill="var(--card)" stroke="var(--accent)" stroke-width="1.4"/>
+        <text x="30" y="153" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--accent)">PARAMETRIC · IN THE WEIGHTS</text>
+        <text x="30" y="170" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">test-time training · the model learns</text>
+        <text x="289" y="163" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">next front</text>
+      </svg>
+      <figcaption class="figure-cap">where the update lands</figcaption>
+    </div>
+
+    <ol>
+      <li><strong>Context.</strong> Information lives in the prompt or KV cache. No parameters change, so no catastrophic forgetting, but it is ephemeral and bounded by the window.</li>
+      <li><strong>Non-parametric memory.</strong> Retrieval, RAG, agentic memory. The backbone stays frozen; an external store holds and serves knowledge. Inspectable and governable, but the model itself does not learn. The store grows; the weights do not.</li>
+      <li><strong>Parametric memory.</strong> The update lands in the parameters. Seamless at read time, the model just knows the thing, but writes are costly and risk interference and forgetting.</li>
+    </ol>
+
+    <p class="pull">A system whose memory only grows is accumulating. A system whose memory consolidates, forgets, and reshapes itself is learning.</p>
+    <p>By that definition, most of what ships today is accumulation.</p>
+
+    <h2>Where production is now</h2>
+
+    <h3>Agentic memory — serve-time, non-parametric</h3>
+    <p>The deployed state of the art. Memory operations, what to write, what to retrieve, what to compress, are handled by an explicit read-write store around a frozen model. The recent work makes those operations themselves learned, training memory ops as reinforcement-learning actions that beat prior memory-augmented baselines. But the backbone is still frozen. The intelligence is in the policy over the store, not in the model's weights. Production favors this for a concrete reason: inspectability and governance. A non-parametric store can be audited, a row can be deleted, provenance is preserved, a stale fact can be excised.</p>
+
+    <h3>Data flywheel — offline, parametric but batched</h3>
+    <p>The other half of the stack. Production signal to preference data to the next post-training run. This does update weights, but discretely, offline, at release cadence, not continuously and not at test time. It is consolidation on a slow clock. The model between releases is still frozen; the flywheel just makes the next frozen checkpoint better.</p>
+
+    <h3>The honest limitation of both</h3>
+    <p>Agentic memory keeps the model static and is bolted on: the agent sometimes ignores retrieved records or uses them inconsistently, because retrieval is not the same as knowing. The data flywheel has release latency baked in: nothing the model learns from an interaction reaches its weights until the next training cycle. Put together, today's continual learning is a frozen core plus an external scaffold plus a slow offline retrain. The weights do not move in real time. That is the gap.</p>
+
+    <h2>The next front: parametric memory</h2>
+    <p>The research front has moved to making the weights themselves the adaptive substrate, continuously and at test time. The unifying idea is to reframe adaptation as updating parameters during inference rather than storing text beside a frozen model.</p>
+
+    <h3>Test-time training — the core mechanism</h3>
+    <p>Weights update during inference using a self-supervised loss, compressing context directly into parameters rather than caching it. The Stanford and Nvidia TTT-E2E work frames long-context modeling as a continual-learning problem: the model updates dynamic MLP weights during inference via next-token loss, and meta-learns an initialization that is easy to update at test time. It matches full-attention accuracy at long context with linear-model speed. The architecture is explicitly dual-memory: sliding-window attention as working memory, immutable MLPs preserving pretrained knowledge, and dynamic MLPs as the learned long-term store. A parallel line endows existing models with in-place test-time training, treating any parameters as fast weights in an apply-then-update cycle.</p>
+
+    <h3>Parameterizing experience — memory that becomes weights</h3>
+    <p>The agent-memory line is pushing the store into the parameters. One approach converts retrieval memory into parameter-resident skills via isolated mixture-of-experts LoRA adapters, with a failure-as-training-signal loop that promotes successful patterns into weights. Another uses reflection-driven test-time training on episode-local adapters, keeping the backbone frozen and updating only lightweight fast weights from constructed and revised lessons. A third makes the parametric state recurrent and constant-size, distilling a full-history teacher into a bounded recurrent memory rather than an unbounded store.</p>
+
+    <h3>Gradient-free adaptation — the efficiency wing</h3>
+    <p>Not all of the front requires backprop at serve time. Some methods do test-time policy improvement by modulating output logits in closed form from a non-parametric experience memory, with no gradient updates at all. Same destination, adapt after deployment, by a cheaper route. This is the wing the efficiency-first labs are betting on.</p>
+
+    <h2>Why parametric is the front, and why it is hard</h2>
+    <p>Parametric memory is the only one of the three substrates where the model actually learns rather than consults. It offers seamless integration, long-term consolidation, and bounded, constant-size state instead of an ever-growing store. That is why the research has moved there. The reason it is a front and not yet the default is a set of hard problems that make up the real agenda:</p>
+    <ul>
+      <li><strong>Catastrophic forgetting.</strong> Writing new knowledge to weights degrades old. The classic mitigations do not scale cleanly to frontier models, and even synthetic-data finetuning induces forgetting on real and out-of-distribution data at production scale.</li>
+      <li><strong>No tombstone.</strong> Parametric memory has no delete. A fact cannot be excised from a weight matrix the way a row is dropped from a store, and you cannot attribute a behavior to the specific update that caused it and revert just that update. This is the governance wall, and it is why inspectable non-parametric stores still win in production.</li>
+      <li><strong>Write cost and stability.</strong> Updates are expensive and must avoid interference. Recurrent compression makes the state bounded but irreversible: once folded in, an observation cannot be recovered or removed.</li>
+      <li><strong>Rate heterogeneity.</strong> Different knowledge changes at different rates, yet a single update mechanism treats all evidence as equally worth absorbing. The multi-timescale framing, fast fading and slow consolidating, is the response.</li>
+      <li><strong>Evaluation gap.</strong> Nobody evaluates forgetting well. Few benchmarks test selective forgetting explicitly, so the field cannot yet measure the thing parametric memory most needs to get right.</li>
+    </ul>
+
+    <h2>The synthesis</h2>
+    <p>The trajectory is a continuum of plasticity across timescales, not a winner among the three substrates. Context is working memory, per-interaction and ephemeral. The non-parametric store is fast, inspectable, and governable, the serve-time layer. Parametric fast weights are within-session learning that compresses experience into bounded weight state, the new middle layer. Consolidated base weights are slow and release-cadence, the data flywheel's output.</p>
+    <p>Today's production stack has the first, second, and fourth, with a hard gap where the third belongs. Parametric memory is the research front precisely because it fills that gap: it makes the serve-time layer learn instead of merely store, and it gives the consolidation loop a fast-clock counterpart. The open problem that gates it is governance, a parametric substrate with a delete, attributable updates, reversible writes, and forgetting that is selective by design rather than catastrophic by accident.</p>
+
+    <p class="note">Notes on where continual learning is heading. Views my own.</p>
+  </article>
+
+  <footer>
+    <a href="index.html">&larr; Romil Shah</a>
+    <span>Post-training · RL · Continual learning</span>
+  </footer>
+</main>
+
+<!-- GoatCounter analytics -->
+<script data-goatcounter="https://romilshah29.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
