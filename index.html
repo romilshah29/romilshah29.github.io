@@ -5,24 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Romil Shah — Research</title>
 <meta name="description" content="Romil Shah — research scientist working on post-training, reinforcement learning, and continual learning for frontier language models.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#0b1220">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #ffffff;
-    --bg-alt: #f6f7f9;
-    --tint: #eaf0f7;
-    --ink: #111827;
-    --ink-head: #0f1b2e;
-    --ink-soft: #374151;
-    --ink-faint: #5b6472;
-    --rule: #d9dee5;
-    --rule-strong: #b8c1cc;
-    --navy: #1f3a5f;
-    --navy-hover: #2b4c78;
-    --link: #1f4e8c;
+    color-scheme: dark;
+    --bg: #0b1220;
+    --bg-alt: #101a2c;
+    --tint: #172540;
+    --ink: #e6eaf0;
+    --ink-head: #f4f6fa;
+    --ink-soft: #b9c2d0;
+    --ink-faint: #8e9aae;
+    --rule: #243049;
+    --rule-strong: #34415c;
+    --navy: #2f5fa8;
+    --navy-hover: #3b6dba;
+    --accent: #7aa7e8;
+    --link: #7aa7e8;
     --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
     --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -40,33 +42,33 @@
   /* top bar */
   header.top { border-bottom: 1px solid var(--rule); background: var(--bg); }
   .top-inner { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; align-items: center; padding-top: 18px; padding-bottom: 18px; }
-  .mark { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--navy); }
+  .mark { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink-head); }
   .mark:hover { text-decoration: none; }
   .top-nav { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; font-weight: 500; }
   .top-nav a { color: var(--ink-soft); }
-  .top-nav a:hover { color: var(--navy); text-decoration: none; }
+  .top-nav a:hover { color: var(--accent); text-decoration: none; }
 
   /* hero */
   .hero-band { background: var(--bg-alt); border-bottom: 1px solid var(--rule); }
   .hero { display: flex; flex-wrap: wrap; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
   .hero-text { flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-  .eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 0; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0; }
   h1.name { margin: 0; font-family: var(--serif); font-weight: 700; font-size: clamp(44px, 6vw, 60px); line-height: 1.05; letter-spacing: -.02em; color: var(--ink-head); }
   .lede { margin: 0; font-size: 21px; line-height: 1.5; color: var(--ink-soft); max-width: 30em; }
   .role { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
   .role strong { font-weight: 600; color: var(--ink); }
   .role span { color: var(--ink-faint); }
   .ribbon { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 8px; }
-  .btn { font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: 4px; border: 1px solid var(--rule-strong); background: var(--bg); color: var(--navy); transition: background .15s, border-color .15s; }
-  .btn:hover { text-decoration: none; border-color: var(--navy); background: #f3f5f8; }
+  .btn { font-size: 14px; font-weight: 500; padding: 11px 20px; border-radius: 4px; border: 1px solid var(--rule-strong); background: var(--bg); color: var(--accent); transition: background .15s, border-color .15s; }
+  .btn:hover { text-decoration: none; border-color: var(--accent); background: var(--bg-alt); }
   .btn.primary { background: var(--navy); border-color: var(--navy); color: #fff; }
   .btn.primary:hover { background: var(--navy-hover); }
 
   .figure { flex: 1 1 340px; min-width: 0; max-width: 460px; margin: 0; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 24px; }
   .figure .label { margin-bottom: 16px; }
   .tier { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 16px; background: var(--tint); border-radius: 3px; }
-  .tier.open { background: var(--bg); border: 1px solid var(--navy); }
-  .tier-name { display: block; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--navy); }
+  .tier.open { background: var(--bg); border: 1px solid var(--accent); }
+  .tier-name { display: block; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--accent); }
   .tier-desc { display: block; font-size: 15px; font-weight: 500; color: var(--ink); }
   .tier-scale { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
   .tier-arrow { height: 22px; display: flex; justify-content: center; align-items: center; }
@@ -74,7 +76,7 @@
   /* sections */
   section.block { padding-top: 72px; }
   section.block:first-of-type { padding-top: 80px; }
-  .sec { display: flex; flex-wrap: wrap; gap: 16px 56px; border-top: 2px solid var(--navy); padding-top: 20px; }
+  .sec { display: flex; flex-wrap: wrap; gap: 16px 56px; border-top: 2px solid var(--accent); padding-top: 20px; }
   .sec-title { flex: 1 1 240px; min-width: 0; }
   .sec-title h2 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 32px; line-height: 1.15; color: var(--ink-head); }
   .sec-body { flex: 2 1 420px; min-width: 0; }
@@ -107,9 +109,9 @@
   .entry-desc { font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin: 2px 0 0; }
   .scholar-line { margin: 28px 0 0; font-size: 14px; color: var(--ink-faint); }
 
-  footer { margin-top: 96px; background: #0f1b2e; color: #c9d3e0; }
+  footer { margin-top: 96px; background: #070c16; color: #8e9aae; }
   .foot-inner { display: flex; flex-wrap: wrap; gap: 8px 32px; justify-content: space-between; padding-top: 28px; padding-bottom: 28px; font-size: 13px; }
-  .foot-inner strong { font-family: var(--serif); font-weight: 600; font-size: 15px; color: #fff; }
+  .foot-inner strong { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink-head); }
 
   @media (max-width: 560px) { .wrap { padding: 0 20px; } .hero { padding-top: 48px; padding-bottom: 48px; gap: 40px; } }
 </style>
@@ -153,12 +155,12 @@
           <div><span class="tier-name">POD · AGENTIC MEMORY</span><span class="tier-desc">fast · per-interaction</span></div>
           <span class="tier-scale">ms–min</span>
         </div>
-        <div class="tier-arrow" aria-hidden="true"><svg width="12" height="22" viewBox="0 0 12 22" fill="none"><path d="M6 1v18M2 15l4 4 4-4" stroke="#1f3a5f" stroke-width="1.5"/></svg></div>
+        <div class="tier-arrow" aria-hidden="true"><svg width="12" height="22" viewBox="0 0 12 22" fill="none"><path d="M6 1v18M2 15l4 4 4-4" stroke="#7aa7e8" stroke-width="1.5"/></svg></div>
         <div class="tier">
           <div><span class="tier-name">POD · DATA FLYWHEEL</span><span class="tier-desc">consolidation loop</span></div>
           <span class="tier-scale">days</span>
         </div>
-        <div class="tier-arrow" aria-hidden="true"><svg width="12" height="22" viewBox="0 0 12 22" fill="none"><path d="M6 1v18M2 15l4 4 4-4" stroke="#1f3a5f" stroke-width="1.5"/></svg></div>
+        <div class="tier-arrow" aria-hidden="true"><svg width="12" height="22" viewBox="0 0 12 22" fill="none"><path d="M6 1v18M2 15l4 4 4-4" stroke="#7aa7e8" stroke-width="1.5"/></svg></div>
         <div class="tier open">
           <div><span class="tier-name">RESEARCH · PARAMETRIC CL</span><span class="tier-desc">slow · in the weights</span></div>
           <span class="tier-scale">gens</span>
@@ -175,7 +177,7 @@
     <div class="strands">
       <div class="strand">
         <div class="strand-node" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><rect x="4" y="4" width="26" height="26" rx="3" stroke="#1f3a5f" stroke-width="1.8"/><path d="M10 13H24M10 17H24M10 21H19" stroke="#1f3a5f" stroke-width="1.6"/></svg>
+          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><rect x="4" y="4" width="26" height="26" rx="3" stroke="#7aa7e8" stroke-width="1.8"/><path d="M10 13H24M10 17H24M10 21H19" stroke="#7aa7e8" stroke-width="1.6"/></svg>
         </div>
         <p class="strand-tag">Pod · lead</p>
         <h3>Agentic memory</h3>
@@ -183,7 +185,7 @@
       </div>
       <div class="strand">
         <div class="strand-node" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><path d="M17 5a12 12 0 1 1-9 4" stroke="#1f3a5f" stroke-width="1.8"/><path d="M8 8l-3 2.5M8 8l1 3.6" stroke="#1f3a5f" stroke-width="1.8"/><circle cx="17" cy="17" r="2.5" fill="#1f3a5f"/></svg>
+          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><path d="M17 5a12 12 0 1 1-9 4" stroke="#7aa7e8" stroke-width="1.8"/><path d="M8 8l-3 2.5M8 8l1 3.6" stroke="#7aa7e8" stroke-width="1.8"/><circle cx="17" cy="17" r="2.5" fill="#7aa7e8"/></svg>
         </div>
         <p class="strand-tag">Pod · lead</p>
         <h3>Data flywheel</h3>
@@ -191,7 +193,7 @@
       </div>
       <div class="strand">
         <div class="strand-node" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="12" stroke="#1f3a5f" stroke-width="1.8"/><circle cx="12" cy="14" r="2" fill="#1f3a5f"/><circle cx="22" cy="13" r="2" fill="#1f3a5f"/><circle cx="17" cy="22" r="2" fill="#1f3a5f"/><circle cx="21" cy="20" r="2" fill="#1f3a5f"/><path d="M12 14L22 13M12 14L17 22M22 13L21 20M17 22L21 20" stroke="#1f3a5f" stroke-width="1.1"/></svg>
+          <svg width="24" height="24" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="12" stroke="#7aa7e8" stroke-width="1.8"/><circle cx="12" cy="14" r="2" fill="#7aa7e8"/><circle cx="22" cy="13" r="2" fill="#7aa7e8"/><circle cx="17" cy="22" r="2" fill="#7aa7e8"/><circle cx="21" cy="20" r="2" fill="#7aa7e8"/><path d="M12 14L22 13M12 14L17 22M22 13L21 20M17 22L21 20" stroke="#7aa7e8" stroke-width="1.1"/></svg>
         </div>
         <p class="strand-tag">Research</p>
         <h3>Parametric CL</h3>
