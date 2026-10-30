@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The continual learning landscape — Romil Shah</title>
 <meta name="description" content="Current continual-learning systems rely on agentic memory and data flywheels. Parametric memory is the next front. A map of the landscape and the open problems.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#0b1220">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #ffffff; --bg-alt: #f6f7f9; --tint: #eaf0f7;
-    --ink: #111827; --ink-head: #0f1b2e; --ink-soft: #1f2937; --ink-faint: #5b6472;
-    --rule: #d9dee5; --navy: #1f3a5f; --link: #1f4e8c;
+    color-scheme: dark;
+    --bg: #0b1220; --bg-alt: #101a2c; --tint: #172540;
+    --ink: #e6eaf0; --ink-head: #f4f6fa; --ink-soft: #c5cdd9; --ink-faint: #8e9aae;
+    --rule: #243049; --navy: #7aa7e8; --accent: #7aa7e8; --link: #7aa7e8;
     --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
     --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -27,17 +28,17 @@
 
   header.top { border-bottom: 1px solid var(--rule); }
   .top-inner { max-width: 1120px; margin: 0 auto; padding: 18px 32px; display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; align-items: center; }
-  .top-inner .mark { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--navy); }
+  .top-inner .mark { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink-head); }
   .top-inner .mark:hover { text-decoration: none; }
   .top-nav { display: flex; gap: 28px; font-size: 14px; font-weight: 500; }
-  .top-nav a { color: #374151; }
+  .top-nav a { color: var(--ink-soft); }
   .top-nav a:hover { color: var(--navy); text-decoration: none; }
 
   .head-band { background: var(--bg-alt); border-bottom: 1px solid var(--rule); }
   .head-inner { max-width: 760px; margin: 0 auto; padding: 64px 32px 48px; display: flex; flex-direction: column; gap: 18px; }
   .kicker { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 0; }
   h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(34px, 5vw, 48px); line-height: 1.1; letter-spacing: -.015em; color: var(--ink-head); margin: 0; }
-  .standfirst { font-size: 20px; line-height: 1.5; color: #374151; margin: 0; }
+  .standfirst { font-size: 20px; line-height: 1.5; color: var(--ink-soft); margin: 0; }
   .byline { font-size: 14px; color: var(--ink-faint); margin: 0; }
 
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px; }
@@ -45,7 +46,7 @@
   .article h2 { font-weight: 600; font-size: 30px; line-height: 1.2; color: var(--ink-head); margin: 56px 0 14px; padding-top: 18px; border-top: 2px solid var(--navy); }
   .article h3 { font-weight: 600; font-size: 21px; line-height: 1.3; color: var(--ink-head); margin: 32px 0 8px; }
   .article p { margin: 0 0 22px; }
-  .article p.lead { font-size: 21px; line-height: 1.6; color: var(--ink); }
+  .article p.lead { font-size: 21px; line-height: 1.6; color: var(--ink-head); }
   .article strong { color: var(--ink-head); font-weight: 600; }
   .article ul, .article ol { margin: 0 0 22px; padding-left: 24px; }
   .article li { margin: 0 0 10px; }
@@ -55,9 +56,9 @@
   .figure-cap { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 12px 0 0 !important; }
   .note { font-family: var(--sans); font-size: 14px; color: var(--ink-faint); margin: 40px 0 0 !important; padding-top: 16px; border-top: 1px solid var(--rule); }
 
-  footer { margin-top: 80px; background: #0f1b2e; color: #c9d3e0; }
+  footer { margin-top: 80px; background: #070c16; color: #8e9aae; }
   .foot-inner { max-width: 1120px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 8px 32px; justify-content: space-between; font-size: 13px; }
-  .foot-inner a { font-family: var(--serif); font-weight: 600; font-size: 15px; color: #fff; }
+  .foot-inner a { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink-head); }
 
   @media (max-width: 560px) { .top-inner, .head-inner, .wrap, .foot-inner { padding-left: 20px; padding-right: 20px; } }
 </style>
@@ -92,18 +93,18 @@
       <svg viewBox="0 0 320 196" xmlns="http://www.w3.org/2000/svg" role="img">
         <rect x="18" y="14" width="284" height="48" rx="5" fill="var(--tint)" stroke="none"/>
         <text x="30" y="33" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--navy)">CONTEXT</text>
-        <text x="30" y="50" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">prompt / KV cache · ephemeral</text>
-        <text x="289" y="43" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">no forgetting</text>
+        <text x="30" y="50" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="11" fill="var(--ink)">prompt / KV cache · ephemeral</text>
+        <text x="289" y="33" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">no forgetting</text>
 
         <rect x="18" y="74" width="284" height="48" rx="5" fill="var(--tint)" stroke="none"/>
         <text x="30" y="93" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--navy)">NON-PARAMETRIC STORE</text>
-        <text x="30" y="110" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">retrieval / agentic memory · inspectable</text>
-        <text x="289" y="103" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">store grows</text>
+        <text x="30" y="110" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="11" fill="var(--ink)">retrieval / agentic memory · inspectable</text>
+        <text x="289" y="93" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">store grows</text>
 
-        <rect x="18" y="134" width="284" height="48" rx="5" fill="#ffffff" stroke="var(--navy)" stroke-width="1.4"/>
+        <rect x="18" y="134" width="284" height="48" rx="5" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.4"/>
         <text x="30" y="153" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="9.5" letter-spacing="0.06em" fill="var(--navy)">PARAMETRIC · IN THE WEIGHTS</text>
-        <text x="30" y="170" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="13" fill="var(--ink)">test-time training · the model learns</text>
-        <text x="289" y="163" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">next front</text>
+        <text x="30" y="170" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="11" fill="var(--ink)">test-time training · the model learns</text>
+        <text x="289" y="153" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="8.5" fill="var(--ink-faint)">next front</text>
       </svg>
       <figcaption class="figure-cap">where the update lands</figcaption>
     </div>
