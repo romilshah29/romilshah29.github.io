@@ -64,8 +64,17 @@
   .figure svg { width: 100%; height: auto; display: block; }
   .figure-cap { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 12px 0 0 !important; }
 
-  .eq { font-family: var(--mono); font-size: 14px; line-height: 1.9; background: var(--bg-alt); border: 1px solid var(--rule); border-radius: 4px; padding: 18px 20px; margin: 16px 0 24px; color: var(--ink); overflow-x: auto; white-space: pre; }
-  .eq .c { color: var(--ink-faint); }
+  .paper { background: #f7f5ef; color: #1b1f27; border-radius: 4px; padding: 26px 28px 20px; margin: 20px 0 28px; box-shadow: 0 1px 0 rgba(255,255,255,.04), 0 10px 30px rgba(0,0,0,.35); font-family: var(--serif); }
+  .paper .grp { font-family: var(--serif); font-style: italic; font-size: 16px; color: #3a4150; margin: 14px 0 2px; }
+  .paper .grp:first-child { margin-top: 0; }
+  .paper .grp b { font-style: normal; font-weight: 600; color: #1b1f27; }
+  .paper .eqn { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+  .paper .eqn .m { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .paper .eqn .m .katex-display { margin: .45em 0; }
+  .paper .eqn .n { font-family: var(--serif); font-size: 16px; color: #3a4150; }
+  .paper .katex { font-size: 1.12em; color: #1b1f27; }
+  .paper .gloss { font-family: var(--sans); font-size: 13px; color: #5b6373; margin: -2px 0 4px; text-align: center; }
+  @media (max-width: 560px) { .paper { padding: 20px 16px 14px; } .paper .katex { font-size: 1em; } }
 
   .tbl-wrap { overflow-x: auto; margin: 24px 0 22px; -webkit-overflow-scrolling: touch; }
   .scopes { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 15px; line-height: 1.45; }
@@ -98,6 +107,10 @@
 
   @media (max-width: 560px) { .top-inner, .head-inner, .wrap, .foot-inner { padding-left: 16px; padding-right: 16px; } .figure { padding: 16px; } }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('.article'),{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false})"></script>
 </head>
 <body>
 
@@ -113,7 +126,7 @@
     <p class="kicker">Technical report · Continual learning</p>
     <h1>CLOVER: Continuous Learning Over Agent Trajectories</h1>
     <p class="standfirst">A continual-learning overseer that decides what to learn from production agent traffic, verifies it, and decides where it belongs: in one user's memory, in a skill shared across users, or in the weights.</p>
-    <p class="byline">Romil Shah · November 2026</p>
+    <p class="byline">Romil Shah · September 2026</p>
   </div>
 </div>
 
@@ -218,20 +231,25 @@
     </div>
 
     <h3>The formulation</h3>
-    <p>Notation: τ is a trajectory, o(τ) its outcome, M the typed memory, θ the weights, u the user context, and R<sub>ℓ</sub> the passing rubric attached to a learning ℓ.</p>
-<div class="eq"><span class="c">① Attribution: pivotal steps, rubrics, hooks</span>
-(S*, R, H) = A(τ, o(τ), M)          <span class="c">S* ⊆ steps(τ)</span>
-vᵢ = verify_indep(sᵢ),  vᵢ ∈ {right, wrong, unknown}
+    <p>Notation: \(\tau\) is a trajectory, \(o(\tau)\) its outcome, \(\mathcal{M}\) the typed memory, \(\theta\) the weights, \(u\) the user context, and \(R_\ell\) the passing rubric attached to a learning \(\ell\).</p>
+    <div class="paper" role="group" aria-label="CLOVER formulation, equations 1 to 7">
+      <p class="grp"><b>Attribution.</b> Pivotal steps, rubrics, and hooks.</p>
+      <div class="eqn"><div class="m">\[(S^{*}, \mathcal{R}, \mathcal{H}) = \mathsf{A}\big(\tau,\, o(\tau),\, \mathcal{M}\big), \qquad S^{*} \subseteq \operatorname{steps}(\tau)\]</div><span class="n">(1)</span></div>
+      <div class="eqn"><div class="m">\[v_i = \operatorname{verify}_{\text{indep}}(s_i), \qquad v_i \in \{\text{right},\ \text{wrong},\ \text{unknown}\}\]</div><span class="n">(2)</span></div>
+      <p class="gloss">each verdict is bound to a verifier, not an opinion</p>
 
-<span class="c">② Consolidation: propose, then verify</span>
-ℓ = L(τ, S*, H)                     <span class="c">typed learning from pivotal steps</span>
-admit(ℓ) = V(ℓ; R) ∧ human          <span class="c">general + attribution rubric; hard-reject</span>
-M ← M ∪ { ℓ : admit(ℓ) = 1 }        <span class="c">into user / cross-user / model store</span>
+      <p class="grp"><b>Consolidation.</b> Propose, then verify.</p>
+      <div class="eqn"><div class="m">\[\ell = \mathsf{L}\big(\tau,\, S^{*},\, \mathcal{H}\big)\]</div><span class="n">(3)</span></div>
+      <div class="eqn"><div class="m">\[\operatorname{admit}(\ell) = \mathsf{V}(\ell;\, \mathcal{R}) \,\wedge\, \operatorname{human}(\ell)\]</div><span class="n">(4)</span></div>
+      <div class="eqn"><div class="m">\[\mathcal{M} \leftarrow \mathcal{M} \,\cup\, \{\, \ell : \operatorname{admit}(\ell) = 1 \,\}\]</div><span class="n">(5)</span></div>
+      <p class="gloss">general rubric + attribution rubric \(R_\ell\), hard-reject; admitted into the user, cross-user, or model store</p>
 
-<span class="c">③ Integration: fast arm, then slow arm</span>
-π′(a | s, u) = π_θ(a | s, retrieve(M, u))         <span class="c">test-time injection</span>
-θ′ = argmin_θ 𝔼_D[ℒ(θ)],  D = hint-fuse({ℓ : admit})  <span class="c">hints → weights</span></div>
-    <p>A learning is first used through injection (π′). Only after that does it graduate into the weights (θ′). This is the fast-to-slow migration that Complementary Learning Systems describes, with hippocampal recall first and neocortical consolidation second.</p>
+      <p class="grp"><b>Integration.</b> Fast arm, then slow arm.</p>
+      <div class="eqn"><div class="m">\[\pi'(a \mid s, u) = \pi_{\theta}\big(a \mid s,\, \operatorname{retrieve}(\mathcal{M}, u)\big)\]</div><span class="n">(6)</span></div>
+      <div class="eqn"><div class="m">\[\theta' = \arg\min_{\theta}\; \mathbb{E}_{D}\big[\mathcal{L}(\theta)\big], \qquad D = \operatorname{hint\text{-}fuse}\big(\{\ell : \operatorname{admit}(\ell) = 1\}\big)\]</div><span class="n">(7)</span></div>
+      <p class="gloss">(6) test-time injection · (7) hints consolidated into weights</p>
+    </div>
+    <p>A learning is first used through injection, Eq. (6). Only after that does it graduate into the weights, Eq. (7). This is the fast-to-slow migration that Complementary Learning Systems describes, with hippocampal recall first and neocortical consolidation second.</p>
 
     <h2><span class="num">04 · PILLAR I</span>Attribution: grounded verdicts, recall-first</h2>
     <p>The proposer proposes and the verifier disposes. Each step gets a verdict v<sub>i</sub> ∈ {right, wrong, unknown}, a confidence, and a passing rubric R<sub>ℓ</sub>. A verdict is only as trustworthy as the verifier behind it, so the verifiers are ranked by how well grounded they are:</p>
