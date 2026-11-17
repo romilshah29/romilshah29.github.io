@@ -97,6 +97,32 @@
   .trace .star { color: var(--good); }
   .trace .warn { color: #e0b46a; }
 
+  .barchart { padding: 22px 24px 18px; }
+  .bc-title { font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--ink-head); margin: 0 0 6px !important; }
+  .bc-grp { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin: 16px 0 4px !important; }
+  .bc-row, .bc-axis { display: grid; grid-template-columns: minmax(0, 15em) 1fr 5.5em; align-items: center; gap: 12px; }
+  .bc-row { position: relative; padding: 5px 0; border-radius: 3px; outline: none; }
+  .bc-row:hover, .bc-row:focus-visible { background: rgba(122,167,232,.08); }
+  .bc-lab { font-size: 14px; color: var(--ink-soft); line-height: 1.3; }
+  .bc-val { font-size: 13px; color: var(--ink-faint); }
+  .bc-track { position: relative; height: 14px; background-image: linear-gradient(to right, var(--rule) 1px, transparent 1px); background-size: calc(100% / 3) 100%; background-position: -1px 0; border-left: 1px solid var(--ink-faint); }
+  .bc-bar { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--w) / 3 * 100%); background: var(--navy); border-radius: 0 4px 4px 0; }
+  .bc-bar.flat { width: 3px; background: var(--ink-faint); border-radius: 0 2px 2px 0; }
+  .bc-axis { margin-top: 8px; }
+  .bc-ticks { position: relative; height: 16px; font-size: 11px; color: var(--ink-faint); }
+  .bc-ticks span { position: absolute; top: 0; transform: translateX(-50%); }
+  .bc-ticks span:nth-child(1) { left: 0; transform: none; }
+  .bc-ticks span:nth-child(2) { left: 33.33%; }
+  .bc-ticks span:nth-child(3) { left: 66.67%; }
+  .bc-ticks span:nth-child(4) { left: 100%; transform: translateX(-100%); }
+  .bc-row::after { content: attr(data-tip); position: absolute; right: 0; bottom: calc(100% + 2px); background: var(--tint); color: var(--ink-head); border: 1px solid var(--rule); font-size: 12px; padding: 4px 8px; border-radius: 3px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .12s; z-index: 2; }
+  .bc-row:hover::after, .bc-row:focus-visible::after { opacity: 1; }
+  @media (max-width: 600px) {
+    .bc-row, .bc-axis { grid-template-columns: 1fr 4.6em; gap: 4px 10px; }
+    .bc-row .bc-lab { grid-column: 1 / -1; font-size: 13px; }
+    .bc-axis .bc-lab { display: none; }
+    .bc-row::after { display: none; }
+  }
   .note { font-family: var(--sans); font-size: 14px; color: var(--ink-faint); margin: 40px 0 0 !important; padding-top: 16px; border-top: 1px solid var(--rule); }
   .refs { font-family: var(--sans); font-size: 14px; line-height: 1.6; color: var(--ink-faint); }
   .refs li { margin-bottom: 6px; }
@@ -333,25 +359,27 @@ hook: verify-freshness-before-cite          <span class="star">★</span> = pivo
     <p class="legend"><span>▲ count = relative size of the gain over the baseline within that column</span><span>ranking holds in every column</span></p>
     <p>Three findings hold across the ablation. <strong>Each added scope adds gain:</strong> user memory, then cross-user skills, then weights, each improve CLG and LoCoMo monotonically. <strong>Cross-user transfer comes only from consolidation:</strong> per-user memory gives a new user essentially nothing, while verified cross-user skills give clear lift that grows after finetuning. <strong>Forgetting stays bounded:</strong> it is low and roughly level across every memory configuration, including after weight updates.</p>
 
-    <h3>Production: agentic-search launch</h3>
-    <p>CLOVER's loop was used in a production agentic-search launch for personalized research. Changes are relative to the pre-launch baseline.</p>
-    <div class="tbl-wrap">
-    <table class="scopes">
-      <thead><tr><th>Metric</th><th class="band">Change vs. baseline</th></tr></thead>
-      <tbody>
-        <tr><td>Response quality<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
-        <tr><td>Hallucination rubric<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
-        <tr><td>Task completeness<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
-        <tr><td>Memory usage<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲</span></td></tr>
-        <tr><td>External grounding benchmark: search</td><td class="band"><span class="b">▲▲</span></td></tr>
-        <tr><td>External grounding benchmark: overall</td><td class="band"><span class="b">▲</span></td></tr>
-        <tr><td>Internal hallucination rate</td><td class="band"><span class="b">▼▼</span> <span class="sub" style="display:inline">(lower is better)</span></td></tr>
-        <tr><td>Grounding / claim verification</td><td class="band"><span class="b">▲</span></td></tr>
-        <tr><td>General capability<span class="sub">reasoning, math, instruction following, tools</span></td><td class="band"><span class="b flat">flat</span></td></tr>
-      </tbody>
-    </table>
+    <h3>Experiment: a real agentic-search task</h3>
+    <p>To test the loop end to end outside the benchmark, we ran it on a real agentic-search problem: personalized deep research over live web search. The agent plans queries, reads sources, and writes a cited answer for a specific user. CLOVER attributed learnings from the agent's own trajectories, admitted them through the verification gate, injected them at test time, and then finetuned them into the policy. We compared this against the same agent without the CLOVER loop, on targeted rubrics, grounding evaluations, and a general-capability regression suite.</p>
+    <div class="figure barchart" role="group" aria-label="Improvement over the no-CLOVER baseline, by metric, in ordinal bands">
+      <p class="bc-title">Improvement over the no-CLOVER baseline</p>
+      <div class="bc-body">
+        <p class="bc-grp">Targeted rubrics · LLM judge</p>
+        <div class="bc-row" tabindex="0" data-tip="Response quality: large improvement"><span class="bc-lab">Response quality</span><span class="bc-track"><span class="bc-bar" style="--w:3"></span></span><span class="bc-val">Large</span></div>
+        <div class="bc-row" tabindex="0" data-tip="Hallucination rubric: large improvement"><span class="bc-lab">Hallucination rubric</span><span class="bc-track"><span class="bc-bar" style="--w:3"></span></span><span class="bc-val">Large</span></div>
+        <div class="bc-row" tabindex="0" data-tip="Task completeness: large improvement"><span class="bc-lab">Task completeness</span><span class="bc-track"><span class="bc-bar" style="--w:3"></span></span><span class="bc-val">Large</span></div>
+        <div class="bc-row" tabindex="0" data-tip="Memory usage: small improvement"><span class="bc-lab">Memory usage</span><span class="bc-track"><span class="bc-bar" style="--w:1"></span></span><span class="bc-val">Small</span></div>
+        <p class="bc-grp">Grounding</p>
+        <div class="bc-row" tabindex="0" data-tip="External benchmark: search: moderate improvement"><span class="bc-lab">External benchmark: search</span><span class="bc-track"><span class="bc-bar" style="--w:2"></span></span><span class="bc-val">Moderate</span></div>
+        <div class="bc-row" tabindex="0" data-tip="Hallucination rate (lower is better): moderate improvement"><span class="bc-lab">Hallucination rate (lower is better)</span><span class="bc-track"><span class="bc-bar" style="--w:2"></span></span><span class="bc-val">Moderate</span></div>
+        <div class="bc-row" tabindex="0" data-tip="External benchmark: overall: small improvement"><span class="bc-lab">External benchmark: overall</span><span class="bc-track"><span class="bc-bar" style="--w:1"></span></span><span class="bc-val">Small</span></div>
+        <div class="bc-row" tabindex="0" data-tip="Claim verification: small improvement"><span class="bc-lab">Claim verification</span><span class="bc-track"><span class="bc-bar" style="--w:1"></span></span><span class="bc-val">Small</span></div>
+        <p class="bc-grp">Regression check</p>
+        <div class="bc-row" tabindex="0" data-tip="General capability: flat change"><span class="bc-lab">General capability</span><span class="bc-track"><span class="bc-bar flat" style="--w:0"></span></span><span class="bc-val">Flat</span></div>
+        <div class="bc-axis" aria-hidden="true"><span class="bc-lab"></span><span class="bc-ticks"><span>flat</span><span>small</span><span>moderate</span><span>large</span></span><span class="bc-val"></span></div>
+      </div>
+      <figcaption class="figure-cap">Bar length is an ordinal band (small · moderate · large), not a measured value. Every bar points in the better direction, so the hallucination-rate bar is a reduction.</figcaption>
     </div>
-    <p class="legend"><span>▲▲▲ large</span><span>▲▲ moderate</span><span>▲ small</span><span>flat = no significant change</span></p>
     <p>The targeted rubrics moved the most. Grounding improved on both external and internal evaluations. General capability held flat, so the targeted gains did not cost regressions elsewhere.</p>
 
     <h2><span class="num">09 · LIMITATIONS</span>Limitations and future work</h2>
