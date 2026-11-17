@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOVER: continual learning over agent trajectories — Romil Shah</title>
+<meta name="description" content="Technical report: CLOVER, a continual-learning overseer that attributes, consolidates, and integrates learnings from production agent trajectories at user, cross-user, and model scope.">
+<meta name="theme-color" content="#0b1220">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b1220; --bg-alt: #101a2c; --tint: #172540;
+    --ink: #e6eaf0; --ink-head: #f4f6fa; --ink-soft: #c5cdd9; --ink-faint: #8e9aae;
+    --rule: #243049; --navy: #7aa7e8; --accent: #7aa7e8; --link: #7aa7e8;
+    --good: #7cc4a0;
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  header.top { border-bottom: 1px solid var(--rule); }
+  .top-inner { max-width: 1120px; margin: 0 auto; padding: 18px 32px; display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; align-items: center; }
+  .top-inner .mark { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink-head); }
+  .top-inner .mark:hover { text-decoration: none; }
+  .top-nav { display: flex; gap: 28px; font-size: 14px; font-weight: 500; }
+  .top-nav a { color: var(--ink-soft); }
+  .top-nav a:hover { color: var(--navy); text-decoration: none; }
+
+  .head-band { background: var(--bg-alt); border-bottom: 1px solid var(--rule); }
+  .head-inner { max-width: 760px; margin: 0 auto; padding: 64px 32px 48px; display: flex; flex-direction: column; gap: 18px; }
+  .kicker { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 0; }
+  h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(34px, 5vw, 48px); line-height: 1.1; letter-spacing: -.015em; color: var(--ink-head); margin: 0; }
+  .standfirst { font-size: 20px; line-height: 1.5; color: var(--ink-soft); margin: 0; }
+  .byline { font-size: 14px; color: var(--ink-faint); margin: 0; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+  .article { padding: 48px 0 0; font-family: var(--serif); font-size: 18px; line-height: 1.7; color: var(--ink-soft); }
+  .article h2 { font-weight: 600; font-size: 30px; line-height: 1.2; color: var(--ink-head); margin: 56px 0 14px; padding-top: 18px; border-top: 2px solid var(--navy); }
+  .article h2 .num { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--navy); display: block; letter-spacing: .06em; margin-bottom: 6px; }
+  .article h3 { font-weight: 600; font-size: 21px; line-height: 1.3; color: var(--ink-head); margin: 32px 0 8px; }
+  .article p { margin: 0 0 22px; }
+  .article p.lead { font-size: 21px; line-height: 1.6; color: var(--ink-head); }
+  .article strong { color: var(--ink-head); font-weight: 600; }
+  .article ul, .article ol { margin: 0 0 22px; padding-left: 24px; }
+  .article li { margin: 0 0 10px; }
+  .article code { font-family: var(--mono); font-size: .82em; background: var(--tint); padding: 1px 5px; border-radius: 3px; color: var(--ink); }
+  .pull { font-weight: 600; font-size: 24px; line-height: 1.4; color: var(--ink-head) !important; background: var(--tint); border-radius: 4px; padding: 24px 28px; margin: 36px 0 !important; }
+
+  .abstract { font-family: var(--sans); font-size: 16px; line-height: 1.65; background: var(--bg-alt); border: 1px solid var(--rule); border-left: 3px solid var(--navy); border-radius: 4px; padding: 22px 24px; margin: 0 0 32px; }
+  .abstract p { margin: 0 0 12px; }
+  .abstract p:last-child { margin: 0; }
+  .abstract .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); }
+
+  .figure { background: var(--bg-alt); border: 1px solid var(--rule); border-radius: 4px; padding: 24px; margin: 32px 0; font-family: var(--sans); }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure-cap { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 12px 0 0 !important; }
+
+  .eq { font-family: var(--mono); font-size: 14px; line-height: 1.9; background: var(--bg-alt); border: 1px solid var(--rule); border-radius: 4px; padding: 18px 20px; margin: 16px 0 24px; color: var(--ink); overflow-x: auto; white-space: pre; }
+  .eq .c { color: var(--ink-faint); }
+
+  .tbl-wrap { overflow-x: auto; margin: 24px 0 22px; -webkit-overflow-scrolling: touch; }
+  .scopes { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 15px; line-height: 1.45; }
+  .scopes th { text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--ink-faint); padding: 0 12px 10px 0; border-bottom: 2px solid var(--navy); vertical-align: bottom; }
+  .scopes td { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--ink-soft); }
+  .scopes td:first-child { font-weight: 600; color: var(--ink-head); }
+  .scopes td.band, .scopes th.band { text-align: center; white-space: nowrap; }
+  .scopes td .sub { display: block; font-weight: 400; font-size: 13px; color: var(--ink-faint); }
+  .scopes.wide { min-width: 640px; }
+  @media (max-width: 600px) { .scopes { font-size: 14px; } }
+
+  .b { font-family: var(--mono); font-size: 13px; letter-spacing: .1em; color: var(--good); }
+  .b.flat { color: var(--ink-faint); }
+  .b.ref { color: var(--ink-faint); letter-spacing: .04em; }
+  .legend { font-family: var(--sans); font-size: 13px; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: 6px 20px; margin: -8px 0 24px; }
+
+  .callout { font-family: var(--sans); font-size: 15px; line-height: 1.6; background: var(--tint); border-radius: 4px; padding: 18px 22px; margin: 24px 0; color: var(--ink-soft); }
+  .callout strong { color: var(--ink-head); }
+  .trace { font-family: var(--mono); font-size: 13px; line-height: 1.8; background: var(--bg-alt); border: 1px solid var(--rule); border-radius: 4px; padding: 16px 20px; margin: 16px 0 24px; overflow-x: auto; white-space: pre; color: var(--ink); }
+  .trace .star { color: var(--good); }
+  .trace .warn { color: #e0b46a; }
+
+  .note { font-family: var(--sans); font-size: 14px; color: var(--ink-faint); margin: 40px 0 0 !important; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .refs { font-family: var(--sans); font-size: 14px; line-height: 1.6; color: var(--ink-faint); }
+  .refs li { margin-bottom: 6px; }
+
+  footer { margin-top: 80px; background: #070c16; color: #8e9aae; }
+  .foot-inner { max-width: 1120px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 8px 32px; justify-content: space-between; font-size: 13px; }
+  .foot-inner a { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink-head); }
+
+  @media (max-width: 560px) { .top-inner, .head-inner, .wrap, .foot-inner { padding-left: 16px; padding-right: 16px; } .figure { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="index.html" class="mark">Romil Shah</a>
+    <nav class="top-nav"><a href="index.html">&larr; Home</a></nav>
+  </div>
+</header>
+
+<div class="head-band">
+  <div class="head-inner">
+    <p class="kicker">Technical report · Continual learning</p>
+    <h1>CLOVER: Continuous Learning Over Agent Trajectories</h1>
+    <p class="standfirst">A continual-learning overseer that decides what to learn from production agent traffic, verifies it, and decides where it belongs: in one user's memory, in a skill shared across users, or in the weights.</p>
+    <p class="byline">Romil Shah · November 2026</p>
+  </div>
+</div>
+
+<main class="wrap">
+  <article class="article">
+
+    <div class="abstract">
+      <p class="tag">Abstract</p>
+      <p>A deployed agent produces far more experience than anyone can learn from, and retraining is slow, expensive, global, and hard to reverse. Two decisions gate any continual-learning loop, and both are usually made by hand. <strong>Attribution</strong> decides which traces, and which step in a trace, carry signal. <strong>Placement</strong> decides whether a learning belongs in context or memory, in a cross-user representation, or in the weights.</p>
+      <p>CLOVER automates both. It has three operators, <em>attribute → consolidate → integrate</em>, and is grounded in Complementary Learning Systems: fast per-user memory, slower cross-user skills, then consolidation into parametric weights. Every step verdict is tied to an independent verifier rather than an LLM's opinion. Every cross-user learning must show transfer lift on held-out users who never produced it, and must pass human review. We also introduce CLBench, a multi-tenant continual-learning benchmark. In internal evaluation and a production agentic-search launch, each added scope (user, then cross-user, then weights) improved continual-learning gain while forgetting stayed bounded.</p>
+    </div>
+
+    <h2><span class="num">01 · MOTIVATION</span>The lesson that never travels</h2>
+    <p class="lead">Every deployed model generates more experience than you can learn from. The question is what to learn from, and where to put what you learn.</p>
+    <p>Today's methods each cover a single level of the problem. Conversation memory stores one user's facts. Skill banks share procedures across users. Preference optimization and rejection-sampling distillation change the weights. None of them couples the levels, so a lesson one user's session earns rarely reaches the next user, and almost never reaches the model.</p>
+
+    <div class="tbl-wrap">
+    <table class="scopes">
+      <thead><tr><th>Learning category</th><th>Examples</th><th>Update level</th></tr></thead>
+      <tbody>
+        <tr><td>User preferences</td><td>Conversation memory, mem0</td><td>User-specific</td></tr>
+        <tr><td>Task-based skills</td><td>ReasoningBank, Voyager, AWM</td><td>Cross-user</td></tr>
+        <tr><td>Preference learning</td><td>RLHF, DPO</td><td>Model weights</td></tr>
+        <tr><td>Rejection-sampling distillation</td><td>STaR, ReST-EM, RFT</td><td>Model weights</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Continual learning needs updates at all three levels, connected by causal attribution and verified admission:</p>
+    <ul>
+      <li><strong>User-specific:</strong> this user's facts, preferences, and episodes. Fast and reversible.</li>
+      <li><strong>Cross-user:</strong> patterns shared across users, such as skills, vocabulary, and procedures.</li>
+      <li><strong>Model:</strong> durable capability baked into the weights. Slow and consolidated.</li>
+    </ul>
+
+    <h2><span class="num">02 · PROBLEM</span>Why this is hard</h2>
+    <p>Five problems make the loop hard, and published systems fail on each of them in measurable ways. The failure figures below come from the cited public papers.</p>
+
+    <div class="tbl-wrap">
+    <table class="scopes wide">
+      <thead><tr><th>Problem</th><th>Why it's hard</th><th>How public solutions fail</th><th>CLOVER's contribution</th></tr></thead>
+      <tbody>
+        <tr><td>Attribution<span class="sub">which step earned it</span></td><td>Trajectory labels don't line up with individual steps. Finding the decisive step is unsolved.</td><td>An LLM step-judge picks the decisive step 14.2% of the time, versus 53.5% for the responsible agent (Who&amp;When). PRMs score near chance on fine-grained errors (PRMBench).</td><td>Causal step-level attribution grounded in independent verifiers. Recall-first, with precision recovered at Verify.</td></tr>
+        <tr><td>Verification<span class="sub">trustworthy admission</span></td><td>LLM self-judging can be gamed, and the scalable Monte Carlo labeler is circular.</td><td>LLM trust-scoring accepted 54 of 82 malicious entries at trust 1.0 (MINJA). Pure-MC labels drift toward the outcome (Qwen, <em>Lessons of PRMs</em>).</td><td>Verification that measures effect: transfer lift on held-out users, plus mandatory human review.</td></tr>
+        <tr><td>Cross-user inference</td><td>Users share fragments of tasks, not whole tasks. Sharing is decided when a memory is written.</td><td>Append-only, self-judged single bank (ReasoningBank). Anonymized at write time, not gated on evidence (Collaborative Memory).</td><td>Cross-trajectory inference: a skill-fragment index with ANN lookup and sequence mining, gated on evidence from ≥k users.</td></tr>
+        <tr><td>Memory lifecycle</td><td>Unbounded growth, staleness, and conflicts.</td><td>Context collapse drops accuracy from 66.7 to 57.1 under monolithic rewrites (ACE). Acting on invalidated memory is unsolved (STALE).</td><td>A typed lifecycle with decay, utility-based garbage collection, reconsolidation, and conflict resolution.</td></tr>
+        <tr><td>Multi-tenancy &amp; integrity</td><td>Retrieval ranks by relevance, not permission, and shared stores are a surface for poisoning.</td><td>98–100% cross-tenant leakage from relevance-only retrieval. Memory poisoning (MINJA, MemoryGraft).</td><td>ABAC with predicate pushdown, k-anonymity, Sybil-resistant support counts, and a measured admission gate.</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p class="pull">Public methods judge with an LLM's opinion. CLOVER measures, using verifiers, held-out transfer lift, and a human gate.</p>
+
+    <h2><span class="num">03 · SYSTEM</span>Three operators</h2>
+    <p>CLOVER runs as two agents and an integration layer. The attribution agent locates signal. The consolidation agent proposes, verifies, and organizes learnings. Integration enacts them, first at test time and later in the weights. Logged outcomes feed the next attribution cycle, which closes the flywheel.</p>
+
+    <div class="figure" aria-label="CLOVER pipeline: attribution, propose, verify, organize, integration, with outcomes feeding back.">
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/></marker>
+        </defs>
+        <text x="20" y="22" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="10" letter-spacing="0.08em" fill="var(--navy)">ATTRIBUTION AGENT</text>
+        <text x="152" y="22" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="10" letter-spacing="0.08em" fill="var(--navy)">CONSOLIDATION AGENT</text>
+        <text x="514" y="22" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="10" letter-spacing="0.08em" fill="var(--navy)">INTEGRATION</text>
+        <line x1="152" y1="30" x2="492" y2="30" stroke="var(--rule)" stroke-width="1"/>
+
+        <g font-family="Inter, system-ui, Helvetica, Arial, sans-serif">
+          <rect x="16" y="44" width="108" height="76" rx="5" fill="var(--tint)"/>
+          <text x="70" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-head)">Attribute</text>
+          <text x="70" y="96" text-anchor="middle" font-size="10" fill="var(--ink-faint)">step · outcome</text>
+          <text x="70" y="109" text-anchor="middle" font-size="10" fill="var(--ink-faint)">· verifier</text>
+
+          <rect x="152" y="44" width="100" height="76" rx="5" fill="var(--tint)"/>
+          <text x="202" y="80" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-head)">Propose</text>
+          <text x="202" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">learning</text>
+
+          <rect x="272" y="44" width="100" height="76" rx="5" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.4"/>
+          <text x="322" y="80" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-head)">Verify</text>
+          <text x="322" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">admission gate</text>
+
+          <rect x="392" y="44" width="100" height="76" rx="5" fill="var(--tint)"/>
+          <text x="442" y="80" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-head)">Organize</text>
+          <text x="442" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">type · lifecycle</text>
+
+          <rect x="514" y="44" width="110" height="76" rx="5" fill="var(--tint)"/>
+          <text x="569" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-head)">Integrate</text>
+          <text x="569" y="96" text-anchor="middle" font-size="10" fill="var(--ink-faint)">inject → then</text>
+          <text x="569" y="109" text-anchor="middle" font-size="10" fill="var(--ink-faint)">finetune</text>
+        </g>
+
+        <g stroke="var(--ink-faint)" stroke-width="1.2" fill="none" marker-end="url(#ar)">
+          <line x1="125" y1="82" x2="150" y2="82"/>
+          <line x1="253" y1="82" x2="270" y2="82"/>
+          <line x1="373" y1="82" x2="390" y2="82"/>
+          <line x1="493" y1="82" x2="512" y2="82"/>
+          <path d="M569,121 L569,168 L70,168 L70,123"/>
+        </g>
+        <text x="320" y="186" text-anchor="middle" font-family="Inter, system-ui, Helvetica, Arial, sans-serif" font-size="11" fill="var(--ink-faint)">logged outcomes → next attribution cycle (flywheel)</text>
+        <text x="322" y="140" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="9" fill="var(--ink-faint)">hard-reject</text>
+      </svg>
+      <figcaption class="figure-cap">attribute → consolidate (propose · verify · organize) → integrate</figcaption>
+    </div>
+
+    <h3>The formulation</h3>
+    <p>Notation: τ is a trajectory, o(τ) its outcome, M the typed memory, θ the weights, u the user context, and R<sub>ℓ</sub> the passing rubric attached to a learning ℓ.</p>
+<div class="eq"><span class="c">① Attribution: pivotal steps, rubrics, hooks</span>
+(S*, R, H) = A(τ, o(τ), M)          <span class="c">S* ⊆ steps(τ)</span>
+vᵢ = verify_indep(sᵢ),  vᵢ ∈ {right, wrong, unknown}
+
+<span class="c">② Consolidation: propose, then verify</span>
+ℓ = L(τ, S*, H)                     <span class="c">typed learning from pivotal steps</span>
+admit(ℓ) = V(ℓ; R) ∧ human          <span class="c">general + attribution rubric; hard-reject</span>
+M ← M ∪ { ℓ : admit(ℓ) = 1 }        <span class="c">into user / cross-user / model store</span>
+
+<span class="c">③ Integration: fast arm, then slow arm</span>
+π′(a | s, u) = π_θ(a | s, retrieve(M, u))         <span class="c">test-time injection</span>
+θ′ = argmin_θ 𝔼_D[ℒ(θ)],  D = hint-fuse({ℓ : admit})  <span class="c">hints → weights</span></div>
+    <p>A learning is first used through injection (π′). Only after that does it graduate into the weights (θ′). This is the fast-to-slow migration that Complementary Learning Systems describes, with hippocampal recall first and neocortical consolidation second.</p>
+
+    <h2><span class="num">04 · PILLAR I</span>Attribution: grounded verdicts, recall-first</h2>
+    <p>The proposer proposes and the verifier disposes. Each step gets a verdict v<sub>i</sub> ∈ {right, wrong, unknown}, a confidence, and a passing rubric R<sub>ℓ</sub>. A verdict is only as trustworthy as the verifier behind it, so the verifiers are ranked by how well grounded they are:</p>
+
+    <div class="tbl-wrap">
+    <table class="scopes">
+      <thead><tr><th>Verifier</th><th>Checks</th><th>Trust tier</th></tr></thead>
+      <tbody>
+        <tr><td>Execution / tool success</td><td>Environment ground truth</td><td>Highest</td></tr>
+        <tr><td>Groundedness / citation</td><td>Claim ↔ retrieved evidence</td><td>High to medium</td></tr>
+        <tr><td>Constraint / schema / format</td><td>Whether a parseable rule is satisfied</td><td>High, narrow</td></tr>
+        <tr><td>Contradiction / consistency</td><td>Conflicts with earlier steps</td><td>Medium</td></tr>
+        <tr><td>Distance-to-goal / graph</td><td>Whether the step reduces graph distance</td><td>Medium</td></tr>
+        <tr><td>LLM-as-judge</td><td>An opinion</td><td>Propose-only</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="callout"><strong>Worked example: a deep-research agent hallucinates a claim.</strong> <em>Detect:</em> the groundedness check fires. <em>Localize:</em> it points to the step that asserts a claim without tool support. <em>Necessity:</em> when that assertion is neutralized, the hallucination clears. <em>Emit:</em> the guardrail "verify each claim before asserting", with rubric R<sub>ℓ</sub>: the ungrounded-claim rate goes down.</div>
+
+    <h2><span class="num">05 · PILLAR II</span>Consolidation: propose, verify, organize</h2>
+    <h3>Propose: learnings are inferred across trajectories</h3>
+    <p>A cross-user skill is not written by any single session. It is <em>discovered</em> when the same fragment shows up across several users. Every attributed pivotal step is written to a <strong>skill-fragment index</strong>, embedded by its hook and environment signature, along with its outcome, scope (user, tenant, or cluster), and provenance. Offline, fragments are clustered and mined with PrefixSpan, using a minimum support counted in distinct users. A candidate is proposed only if it clears the propose-gate: ≥k Sybil-checked users, ≥d task clusters, it can be abstracted, and its type is one of vocabulary, skill, or procedure.</p>
+
+<div class="trace">User A: "compare H100 cloud prices"
+s1  search("H100 cloud price 2026")
+s2  open(blog "cheapest GPU clouds")
+s3  extract price        <span class="warn">⚠ dated 2024</span>
+s4  <span class="star">★ open(vendor live calculator)</span>  → current price
+s5  cite primary source  <span class="star">✓</span>
+hook: verify-freshness-before-cite          <span class="star">★</span> = pivotal step</div>
+
+    <p>The index record keeps the signature <code>search→open(3p)→extract→detect-stale→open(primary)→extract</code> with env-sig <code>{task: price-lookup, error: stale-source}</code>. User B (flight fares, where "the fare shown was cached") and User C (drug prices, "list price vs. live pharmacy") hit the same fragment on unrelated topics. Lifted, it becomes a cross-user skill:</p>
+
+    <div class="callout"><strong>Prefer the primary source for time-sensitive facts.</strong> For facts that change, such as prices, availability, and rankings, prefer the live or primary source over a cached third-party copy. (1) Flag time-sensitive facts. (2) Check when the source was last updated. (3) If it is stale or third-party, open the primary source. (4) Cite the primary source.</div>
+
+    <h3>Verify: one general rubric plus R<sub>ℓ</sub>, hard-reject</h3>
+    <p>Each candidate must be <strong>measurable</strong>, <strong>beneficial</strong>, and <strong>safe to share</strong>. The decisive cross-user test is <strong>transfer lift on held-out users</strong> who never generated the learning. Human review is mandatory for cross-user and model-scope admissions. The review budget only orders the queue and can never bypass it. In the example, the skill is measured by the freshness-error rate on held-out research tasks, shows lift on users who did not generate it, and is abstracted with no PII before sign-off.</p>
+
+    <h3>Organize: route by type and lifecycle</h3>
+    <ul>
+      <li><strong>Encoding:</strong> a fast write to the right store (user memory, shared memory, or the finetuning dataset).</li>
+      <li><strong>Schema integration:</strong> merge into an existing shared skill or vocabulary entry. In the example, the new skill merges with the citation-hygiene skills.</li>
+      <li><strong>Reconsolidation:</strong> offline re-read, revise, and re-stabilize, with every version kept.</li>
+      <li><strong>Decay and GC:</strong> Ebbinghaus-style decay of unused entries and utility-based eviction.</li>
+      <li><strong>Conflict resolution:</strong> by recency, source trust, and support.</li>
+    </ul>
+
+    <h2><span class="num">06 · PILLAR III</span>Integration: the two arms of CLS</h2>
+    <p>Consolidation selects and files learnings. Integration <em>enacts</em> them.</p>
+    <h3>Test-time injection: fast, reversible, per-request</h3>
+    <p>Scope and ABAC filtering come first, pushed down into the retrieval predicate. Ranking is similarity × trust with a deliberately low k. A learned "when-to-apply" gate decides whether to use a retrieved skill, so retrieval never forces its use. Skills are surfaced by progressive disclosure. Each outcome is logged and feeds the next attribution cycle.</p>
+    <h3>Finetuning: slow, systems consolidation, semi-permanent</h3>
+    <p>Admitted learnings are fused into a dataset and trained with SFT plus on-policy self-distillation (OPSD), which limits forgetting. The model then passes an eval gate and a mandatory human sign-off before deployment, with versioned rollback if the holdback set regresses. This step applies the same Verify discipline at model scope.</p>
+
+    <h2><span class="num">07 · EVALUATION</span>CLBench: measuring system-level learning</h2>
+    <p>No existing benchmark tests continual learning across tenants, so we built one. CLBench streams tasks from many simulated users with planted scope labels and measures:</p>
+    <ul>
+      <li><strong>CLG, Continual-Learning Gain</strong> (primary): cumulative task-success lift across the stream, compared with a no-memory baseline, reported net of forgetting.</li>
+      <li><strong>XTL, Cross-user Transfer Lift:</strong> the zero-shot lift for a held-out user from learnings they never generated.</li>
+      <li><strong>SRF, Scope-Routing F1:</strong> whether admitted learnings land at the planted scope.</li>
+      <li><strong>Forgetting rate</strong> (counter-metric): regression on tasks the system had already solved. It must stay near zero.</li>
+      <li><strong>LoCoMo success lift</strong> (public benchmark): success rate with the CLOVER loop on versus off.</li>
+    </ul>
+
+    <h2><span class="num">08 · RESULTS</span>Anonymized results</h2>
+    <div class="callout"><strong>On the numbers.</strong> These results come from proprietary systems, so absolute values and exact deltas are withheld. Configurations are shown in rank order, and each effect is reported as a coarse band relative to its baseline. The direction and ordering of every effect match the measured results.</div>
+
+    <h3>Ablation on CLBench</h3>
+    <div class="tbl-wrap">
+    <table class="scopes wide">
+      <thead><tr><th>Configuration</th><th class="band">CLG</th><th class="band">XTL<br>cross-user</th><th class="band">Forgetting</th><th class="band">LoCoMo</th></tr></thead>
+      <tbody>
+        <tr><td>No-memory<span class="sub">baseline; nothing carries over</span></td><td class="band"><span class="b ref">ref</span></td><td class="band"><span class="b ref">none</span></td><td class="band"><span class="b ref">none</span></td><td class="band"><span class="b ref">ref</span></td></tr>
+        <tr><td>Conversation memory<span class="sub">per-user recall only</span></td><td class="band"><span class="b">▲▲</span></td><td class="band"><span class="b flat">≈ 0</span></td><td class="band"><span class="b flat">low</span></td><td class="band"><span class="b">▲▲</span></td></tr>
+        <tr><td>Cross-user CLOVER<span class="sub">attribution + consolidation + injection</span></td><td class="band"><span class="b">▲▲▲</span></td><td class="band"><span class="b">▲▲</span></td><td class="band"><span class="b flat">low</span></td><td class="band"><span class="b">▲▲</span></td></tr>
+        <tr><td>Finetuned CLOVER<span class="sub">+ reward-verified finetuning</span></td><td class="band"><span class="b">▲▲▲▲</span></td><td class="band"><span class="b">▲▲▲</span></td><td class="band"><span class="b flat">low</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="legend"><span>▲ count = relative size of the gain over the baseline within that column</span><span>ranking holds in every column</span></p>
+    <p>Three findings hold across the ablation. <strong>Each added scope adds gain:</strong> user memory, then cross-user skills, then weights, each improve CLG and LoCoMo monotonically. <strong>Cross-user transfer comes only from consolidation:</strong> per-user memory gives a new user essentially nothing, while verified cross-user skills give clear lift that grows after finetuning. <strong>Forgetting stays bounded:</strong> it is low and roughly level across every memory configuration, including after weight updates.</p>
+
+    <h3>Production: agentic-search launch</h3>
+    <p>CLOVER's loop was used in a production agentic-search launch for personalized research. Changes are relative to the pre-launch baseline.</p>
+    <div class="tbl-wrap">
+    <table class="scopes">
+      <thead><tr><th>Metric</th><th class="band">Change vs. baseline</th></tr></thead>
+      <tbody>
+        <tr><td>Response quality<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
+        <tr><td>Hallucination rubric<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
+        <tr><td>Task completeness<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲▲▲</span></td></tr>
+        <tr><td>Memory usage<span class="sub">targeted rubric, LLM judge</span></td><td class="band"><span class="b">▲</span></td></tr>
+        <tr><td>External grounding benchmark: search</td><td class="band"><span class="b">▲▲</span></td></tr>
+        <tr><td>External grounding benchmark: overall</td><td class="band"><span class="b">▲</span></td></tr>
+        <tr><td>Internal hallucination rate</td><td class="band"><span class="b">▼▼</span> <span class="sub" style="display:inline">(lower is better)</span></td></tr>
+        <tr><td>Grounding / claim verification</td><td class="band"><span class="b">▲</span></td></tr>
+        <tr><td>General capability<span class="sub">reasoning, math, instruction following, tools</span></td><td class="band"><span class="b flat">flat</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="legend"><span>▲▲▲ large</span><span>▲▲ moderate</span><span>▲ small</span><span>flat = no significant change</span></p>
+    <p>The targeted rubrics moved the most. Grounding improved on both external and internal evaluations. General capability held flat, so the targeted gains did not cost regressions elsewhere.</p>
+
+    <h2><span class="num">09 · LIMITATIONS</span>Limitations and future work</h2>
+    <h3>Limitations</h3>
+    <ul>
+      <li><strong>Replay validity:</strong> the environment can change between the original trace and its replay. This is the largest remaining risk.</li>
+      <li><strong>Breadth of the flywheel-to-weights path:</strong> it has been shown for personalized research and is unproven beyond it.</li>
+      <li><strong>Fragment grouping</strong> across trajectories is LLM-based and low precision.</li>
+      <li><strong>The no-ground-truth long tail</strong> cannot be promoted. This is a stated bound of the system, not an oversight.</li>
+    </ul>
+    <h3>Future work</h3>
+    <ul>
+      <li><strong>Parametric and architectural memory:</strong> an adaptable weight-layer substrate for vocabulary, skills, and alignment that stays private and revocable.</li>
+      <li>Shared cross-user preference defaults, with consent and opt-in.</li>
+      <li>Grouping fragments by behavioral equivalence instead of LLM judgment.</li>
+      <li>Calibrating k and d against CLBench's scope labels.</li>
+    </ul>
+    <p class="pull">The weight layer is the bottleneck. The next step is to make the substrate itself adaptable.</p>
+    <p>That is the thesis of the <a href="continual-learning.html">continual learning landscape</a> note: the production stack has context, a non-parametric store, and consolidated weights, with a gap where adaptable, governable parametric memory belongs.</p>
+
+    <h2>References</h2>
+    <ol class="refs">
+      <li>McClelland, McNaughton &amp; O'Reilly. Why there are complementary learning systems in the hippocampus and neocortex. 1995.</li>
+      <li>Zhang et al. Which agent causes task failures and when? (Who&amp;When). ICML 2025.</li>
+      <li>PRMBench: a fine-grained benchmark for process reward models. 2025.</li>
+      <li>Zhang et al. The lessons of developing process reward models in mathematical reasoning (Qwen). 2025.</li>
+      <li>Dong et al. MINJA: memory injection attacks on LLM agents. 2025.</li>
+      <li>ReasoningBank; Voyager (Wang et al., 2023); Agent Workflow Memory (Wang et al., 2024).</li>
+      <li>Collaborative Memory: multi-user memory sharing in LLM agents. 2025.</li>
+      <li>ACE: agentic context engineering. 2025.</li>
+      <li>Maharana et al. LoCoMo: evaluating very long-term conversational memory of LLM agents. 2024.</li>
+      <li>Zelikman et al. STaR, 2022 · Singh et al. ReST-EM, 2023 · Rafailov et al. DPO, 2023.</li>
+    </ol>
+
+    <p class="note">Technical report adapted from a research talk on past work. Results are anonymized and figures from production systems are withheld. Views my own.</p>
+  </article>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <a href="index.html">&larr; Romil Shah</a>
+    <span>Post-training · RL · Continual learning</span>
+  </div>
+</footer>
+
+<!-- GoatCounter analytics -->
+<script data-goatcounter="https://romilshah29.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
